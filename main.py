@@ -5,13 +5,8 @@ from typing import Optional
 
 from PySide6.QtWidgets import (
     QApplication,
-    QDialog,
-    QMainWindow,
     QMessageBox,
     QWidget,
-    QVBoxLayout,
-    QPushButton,
-    QLabel,
 )
 from Control.connection import DB
 from Control.login import LoginDialog
@@ -30,8 +25,8 @@ class Tarea(QWidget, Ui_Form):
         self.setupUi(self)
 
         """ Estos type hints son para ayudar a los desarrolladores a entender el tipo de datos que se espera en cada variable. """
-        self.user: Optional[str] = None
-        self.password: Optional[str] = None
+        self.user: Optional[str] = "root"
+        self.password: Optional[str] = "roos"
 
         self.db = DB()
         self.conectar_sqlite()
@@ -42,6 +37,11 @@ class Tarea(QWidget, Ui_Form):
             if not self.db.is_connected():
                 logging.info("Intentando conectar a SQLite...")
                 self.db.conectar(self.user, self.password)
+                QMessageBox.information(
+                    self,
+                    "Conexión exitosa",
+                    "Conexión establecida con éxito.",
+                )
                 logging.info("Conexión establecida.")
         except sqlite3.Error as e:
             logging.error(f"Error al conectar con SQLite: {str(e)}")
@@ -58,6 +58,11 @@ class Tarea(QWidget, Ui_Form):
                 try:
                     self.db.conectar(self.user, self.password)
                     logging.info("Conexión exitosa.")
+                    QMessageBox.information(
+                        self,
+                        "Conexión exitosa",
+                        "Conexión establecida con éxito.",
+                    )
                     return  # Salir del método si la conexión es exitosa
                 except sqlite3.Error as e:
                     logging.error(f"Error al conectar con SQLite: {str(e)}")
