@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
+    <width>540</width>
     <height>244</height>
    </rect>
   </property>
@@ -39,8 +39,14 @@
      <property name="midLineWidth">
       <number>0</number>
      </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+     </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
      </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
@@ -56,6 +62,9 @@
      </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
+     </property>
+     <property name="gridStyle">
+      <enum>Qt::PenStyle::SolidLine</enum>
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
@@ -115,22 +124,41 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="pushButton_Actualizar">
+       <property name="toolTip">
+        <string>Lee datos de la database, y actualiza el contenido en esta tabla en función de esos datos.</string>
+       </property>
        <property name="text">
-        <string>Actualizar</string>
+        <string>Refrescar página</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_Importar">
+       <property name="toolTip">
+        <string>Muestra en la tabla los datos extraídos de un .csv. No opera con ellos.</string>
+       </property>
        <property name="text">
-        <string>Importar</string>
+        <string>Leer CSV</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Transform">
+       <property name="toolTip">
+        <string>Introduce los datos del .csv en la base de datos.</string>
+       </property>
+       <property name="text">
+        <string>CSV -&gt; Base de datos</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_Eliminar">
+       <property name="toolTip">
+        <string>Elimina los datos de la base de datos y de la tabla.</string>
+       </property>
        <property name="text">
-        <string>Eliminar</string>
+        <string>Eliminar contenido</string>
        </property>
       </widget>
      </item>
@@ -154,6 +182,9 @@
          <width>75</width>
          <height>29</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Buscar alumno por id.</string>
        </property>
        <property name="text">
         <string>Buscar</string>

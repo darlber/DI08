@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'tablaqWQBvp.ui'
+## Form generated from reading UI file 'tablaTqrbCq.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -25,7 +25,7 @@ class Ui_Form(object):
         if not Form.objectName():
             Form.setObjectName(u"Form")
         Form.setWindowModality(Qt.WindowModality.WindowModal)
-        Form.resize(446, 244)
+        Form.resize(540, 244)
         font = QFont()
         font.setPointSize(12)
         Form.setFont(font)
@@ -58,12 +58,15 @@ class Ui_Form(object):
         self.tableWidget.setFrameShape(QFrame.Shape.StyledPanel)
         self.tableWidget.setFrameShadow(QFrame.Shadow.Sunken)
         self.tableWidget.setMidLineWidth(0)
+        self.tableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.tableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.tableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableWidget.setTextElideMode(Qt.TextElideMode.ElideMiddle)
         self.tableWidget.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.tableWidget.setGridStyle(Qt.PenStyle.SolidLine)
         self.tableWidget.setSortingEnabled(True)
         self.tableWidget.setRowCount(3)
         self.tableWidget.setColumnCount(4)
@@ -81,6 +84,11 @@ class Ui_Form(object):
         self.pushButton_Importar.setObjectName(u"pushButton_Importar")
 
         self.horizontalLayout.addWidget(self.pushButton_Importar)
+
+        self.pushButton_Transform = QPushButton(Form)
+        self.pushButton_Transform.setObjectName(u"pushButton_Transform")
+
+        self.horizontalLayout.addWidget(self.pushButton_Transform)
 
         self.pushButton_Eliminar = QPushButton(Form)
         self.pushButton_Eliminar.setObjectName(u"pushButton_Eliminar")
@@ -123,9 +131,25 @@ class Ui_Form(object):
         ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"Correo", None));
         ___qtablewidgetitem3 = self.tableWidget.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"UltimoAcceso", None));
-        self.pushButton_Actualizar.setText(QCoreApplication.translate("Form", u"Actualizar", None))
-        self.pushButton_Importar.setText(QCoreApplication.translate("Form", u"Importar", None))
-        self.pushButton_Eliminar.setText(QCoreApplication.translate("Form", u"Eliminar", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton_Actualizar.setToolTip(QCoreApplication.translate("Form", u"Lee datos de la database, y actualiza el contenido en esta tabla en funci\u00f3n de esos datos.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_Actualizar.setText(QCoreApplication.translate("Form", u"Refrescar p\u00e1gina", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton_Importar.setToolTip(QCoreApplication.translate("Form", u"Muestra en la tabla los datos extra\u00eddos de un .csv. No opera con ellos.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_Importar.setText(QCoreApplication.translate("Form", u"Leer CSV", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton_Transform.setToolTip(QCoreApplication.translate("Form", u"Introduce los datos del .csv en la base de datos.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_Transform.setText(QCoreApplication.translate("Form", u"CSV -> Base de datos", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton_Eliminar.setToolTip(QCoreApplication.translate("Form", u"Elimina los datos de la base de datos y de la tabla.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_Eliminar.setText(QCoreApplication.translate("Form", u"Eliminar contenido", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton_Buscar.setToolTip(QCoreApplication.translate("Form", u"Buscar alumno por id.", None))
+#endif // QT_CONFIG(tooltip)
         self.pushButton_Buscar.setText(QCoreApplication.translate("Form", u"Buscar", None))
     # retranslateUi
 

@@ -1,9 +1,7 @@
 ﻿import sys
 import logging
 from typing import Optional
-
 from PySide6.QtWidgets import QApplication
-
 from Control.connection import DB
 
 logging.basicConfig(
