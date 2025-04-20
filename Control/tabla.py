@@ -22,7 +22,12 @@ class Tabla(QWidget, Ui_Form):
         self.pushButton_Transform.clicked.connect(self.csv_to_sql)
         self.pushButton_Eliminar.clicked.connect(self.eliminar_datos)
         self.pushButton_Actualizar.clicked.connect(self.cargar_desde_SQLite)
+
         self.pushButton_Buscar.clicked.connect(self.buscar_alumno)
+        # si apretamos el enter en el lineEdit_Buscar se ejecuta la funcion buscar_alumno
+        self.lineEdit_Buscar.returnPressed.connect(self.buscar_alumno)
+        # al hacer doble click en una celda de la tabla se ejecuta la funcion mostrar_alumnos
+        self.tableWidget.cellDoubleClicked.connect(self.mostrar_alumnos)
 
     def cargar_desde_SQLite(self):
         """Carga los datos desde la base de datos SQLite y los muestra en la tabla."""
@@ -220,12 +225,84 @@ class Tabla(QWidget, Ui_Form):
             )
 
     def mostrar_alumnos(self):
-        """Muestra alumno seleccionado aparte.
-        QMESSAgeBOX"""
-        pass
+        """Muestra alumno seleccionado aparte en un QMessageBox."""
+        fila_seleccionada = self.tableWidget.currentRow()
+        if fila_seleccionada == -1:
+            QMessageBox.warning(
+                self, "Advertencia", "Por favor, selecciona un alumno de la tabla."
+            )
+            return
+
+        try:
+            alumno_id = self.tableWidget.item(fila_seleccionada, 0).text()
+            nombre_alumno = self.tableWidget.item(fila_seleccionada, 1).text()
+            correo_alumno = self.tableWidget.item(fila_seleccionada, 2).text()
+            ultimo_acceso = self.tableWidget.item(fila_seleccionada, 3).text()
+
+            QMessageBox.information(
+                self,
+                "Alumno seleccionado",
+                f"ID: {alumno_id}\nNombre: {nombre_alumno}\nCorreo: {correo_alumno}\nÚltimo Acceso: {ultimo_acceso}",
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Error", f"Error al mostrar el alumno:\n{str(e)}"
+            )
 
     def buscar_alumno(self):
-        """Busca un alumno.
-        TODO select id from el texto en el lineEdit y lo muestra en qmessgaebox
-        """
-        pass
+        """Busca un alumno por nombre y muestra los resultados en un QMessageBox."""
+        texto_busqueda = self.lineEdit_Buscar.text().strip()
+        if not texto_busqueda:
+            QMessageBox.warning(
+                self, "Advertencia", "Por favor, introduce un nombre para buscar."
+            )
+            return
+
+        # Normalizar el texto de búsqueda (convertir a minúsculas y eliminar tildes)
+        texto_busqueda = texto_busqueda.lower()
+        texto_busqueda = (
+            texto_busqueda.replace("á", "a")
+            .replace("é", "e")
+            .replace("í", "i")
+            .replace("ó", "o")
+            .replace("ú", "u")
+        )
+
+        try:
+            with DB() as conexion:
+                cursor = conexion.cursor()
+                # Usar LOWER y REPLACE en la consulta para normalizar los datos de la base de datos
+                # la idea es que la consulta ignore las tildes y mayúsculas/minúsculas
+                query = """
+                    SELECT ID, Alumno, Correo, ultimoAcceso 
+                    FROM alumnos 
+                    WHERE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(Alumno, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u')) 
+                    LIKE ?
+                """
+                cursor.execute(query, (f"%{texto_busqueda}%",))
+                resultados = cursor.fetchall()
+            logging.info(
+                f"Resultados de búsqueda para '{texto_busqueda}': {resultados}"
+            )
+
+            if resultados:
+                mensaje = "Resultados encontrados:\n\n"
+                for resultado in resultados:
+                    alumno_id, nombre_alumno, correo_alumno, ultimo_acceso = resultado
+                    mensaje += (
+                        f"🆔 ID: {alumno_id}\n"
+                        f"👤 Nombre: {nombre_alumno}\n"
+                        f"📧 Correo: {correo_alumno}\n"
+                        f"⏰ Último Acceso: {ultimo_acceso}\n\n"
+                    )
+
+                QMessageBox.information(self, "Resultados", mensaje)
+            else:
+                QMessageBox.information(
+                    self,
+                    "Sin resultados",
+                    "No se encontró ningún alumno con ese nombre.",
+                )
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error al buscar el alumno:\n{str(e)}")
