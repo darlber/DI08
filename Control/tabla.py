@@ -10,14 +10,13 @@ from Control.connection import DB
 
 class Tabla(QWidget, Ui_Form):
     """Clase para la interfaz de la tabla."""
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.db = DB()
 
         self.cargar_desde_SQLite()
-
+        
         self.pushButton_Importar.clicked.connect(self.importar_datos_desde_csv)
         self.pushButton_Transform.clicked.connect(self.csv_to_sql)
         self.pushButton_Eliminar.clicked.connect(self.eliminar_datos)
@@ -28,6 +27,11 @@ class Tabla(QWidget, Ui_Form):
         self.lineEdit_Buscar.returnPressed.connect(self.buscar_alumno)
         # al hacer doble click en una celda de la tabla se ejecuta la funcion mostrar_alumnos
         self.tableWidget.cellDoubleClicked.connect(self.mostrar_alumnos)
+        
+        # Usar un QTimer para ajustar el tamaño después de mostrar la ventana
+        # con este pequeño retraso, aseguramos que la tabla esté completamente renderizada
+        # antes de ajustar el tamaño de los encabezados y evitamos ligeros desajustes
+        QTimer.singleShot(0, self.ajustar_size_encabezados)
 
     def cargar_desde_SQLite(self):
         """Carga los datos desde la base de datos SQLite y los muestra en la tabla."""
