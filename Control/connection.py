@@ -19,7 +19,7 @@ class DB:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def conectar(self, user, password):
+    def conectarConSQLite(self, user, password):
         """Establece una conexión directa con la base de datos SQLite."""
         if not (user == self.valid_user and password == self.valid_password):
             logging.error("Usuario o contraseña incorrectos.")
@@ -62,3 +62,37 @@ class DB:
                 return cursor.fetchall()
         except sqlite3.Error as e:
             raise sqlite3.Error(f"Error al ejecutar consulta: {str(e)}")
+
+    def intentar_conectar_con_login(self, user, password):
+            #TODO quizas eliminar esta parte
+        try:
+            self.conectarConSQLite(user, password)
+            logging.info("Conexión establecida con credenciales por defecto.")
+            return True
+        except sqlite3.Error as e:
+            logging.warning(f"Conexión con credenciales iniciales fallida: {str(e)}")
+            #TODO quizas eliminar esta parte
+            
+        # Importación local para evitar ciclos
+        from Control.login import LoginDialog  
+        """Muestra el diálogo de login hasta 3 intentos o éxito."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            login_dialog = LoginDialog()
+            if login_dialog.exec():
+                user, password = login_dialog.get_credentials()
+                try:
+                    self.conectarConSQLite(user, password)
+                    QMessageBox.information(None, "Conexión", "Conexión establecida.")
+                    return True
+                except sqlite3.Error as e:
+                    logging.warning(f"Intento {attempt + 1} fallido: {str(e)}")
+            else:
+                logging.info("Login cancelado por el usuario.")
+                break
+
+        QMessageBox.critical(
+            None, "Error de conexión",
+            "No se pudo establecer conexión después de varios intentos."
+        )
+        return False
