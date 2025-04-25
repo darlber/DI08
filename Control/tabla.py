@@ -3,14 +3,12 @@ import logging
 import csv
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QTimer, QTime
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from Vista.ui_tabla import Ui_Form
 from Control.connection import DB
-
-import doctest
-
+from Control import calcular_tiempo
 
 
 class Tabla(QWidget, Ui_Form):
@@ -20,9 +18,8 @@ class Tabla(QWidget, Ui_Form):
         super().__init__()
         self.setupUi(self)
         self.db = DB()
-        
-        self.cargar_desde_SQLite()
 
+        self.cargar_desde_SQLite()
 
         self.pushButton_Importar.clicked.connect(self.importar_datos_desde_csv)
         self.pushButton_Transform.clicked.connect(self.csv_to_sql)
@@ -33,16 +30,13 @@ class Tabla(QWidget, Ui_Form):
         # si apretamos el enter en el lineEdit_Buscar se ejecuta la funcion buscar_alumno
         self.lineEdit_Buscar.returnPressed.connect(self.buscar_alumno)
         # al hacer doble click en una celda de la tabla se ejecuta la funcion mostrar_alumnos
-        self.tableWidget.cellDoubleClicked.connect(self.tomar_datos_alumno_tabla)
+        # si apretamos enter despues de seleccionar tambien
+        self.tableWidget.itemActivated.connect(self.tomar_datos_alumno_tabla)
 
         # Usar un QTimer para ajustar el tamaño después de mostrar la ventana
         # con este pequeño retraso, aseguramos que la tabla esté completamente renderizada
         # antes de ajustar el tamaño de los encabezados y evitamos ligeros desajustes
         QTimer.singleShot(0, self.ajustar_size_encabezados)
-
-        """_summary_
-        
-        """
 
     def cargar_desde_SQLite(self):
         """Carga los datos desde la base de datos SQLite y los muestra en la tabla."""
@@ -90,12 +84,8 @@ class Tabla(QWidget, Ui_Form):
             )
 
     def importar_datos_desde_csv(self):
-        """Importa datos desde un archivo CSV y los muestra en la tabla.
-        
-        """
-        
-        
-  
+        """Importa datos desde un archivo CSV y los muestra en la tabla."""
+
         # Abrir el cuadro de diálogo para seleccionar el archivo CSV
         ruta_archivo, _ = QFileDialog.getOpenFileName(
             self,
@@ -259,7 +249,9 @@ class Tabla(QWidget, Ui_Form):
             correo_alumno = self.tableWidget.item(fila_seleccionada, 2).text()
             ultimo_acceso = self.tableWidget.item(fila_seleccionada, 3).text()
 
-            self.mensaje_datos_alumno(alumno_id, nombre_alumno, correo_alumno, ultimo_acceso)
+            self.mensaje_datos_alumno(
+                alumno_id, nombre_alumno, correo_alumno, ultimo_acceso
+            )
 
         except Exception as e:
             QMessageBox.critical(
@@ -301,12 +293,14 @@ class Tabla(QWidget, Ui_Form):
             logging.info(
                 f"Resultados de búsqueda para '{texto_busqueda}': {resultados}"
             )
-            
+
             if resultados:
                 for resultado in resultados:
                     alumno_id, nombre_alumno, correo_alumno, ultimo_acceso = resultado
 
-                    self.mensaje_datos_alumno(alumno_id, nombre_alumno, correo_alumno, ultimo_acceso)
+                    self.mensaje_datos_alumno(
+                        alumno_id, nombre_alumno, correo_alumno, ultimo_acceso
+                    )
             else:
                 QMessageBox.information(
                     self,
@@ -317,10 +311,12 @@ class Tabla(QWidget, Ui_Form):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error al buscar el alumno:\n{str(e)}")
 
-    def mensaje_datos_alumno(self, alumno_id, nombre_alumno, correo_alumno, ultimo_acceso):
+    def mensaje_datos_alumno(
+        self, alumno_id, nombre_alumno, correo_alumno, ultimo_acceso
+    ):
         hora_actual = datetime.datetime.now().strftime("%d-%m-%y, %H:%M:%S")
-        tiempo_transcurrido = self.calcular_periodo_tiempo(ultimo_acceso)
-    
+        tiempo_transcurrido = calcular_tiempo.calcular_periodo_tiempo(ultimo_acceso)
+
         """Muestra un QMessageBox con los datos del alumno."""
         QMessageBox.information(
             self,
@@ -332,42 +328,3 @@ class Tabla(QWidget, Ui_Form):
             f"⏳ Hora de último acceso: {tiempo_transcurrido}\n"
             f"📅 Tiempo desde último Acceso: {ultimo_acceso}",
         )
-        
-    def calcular_periodo_tiempo(self, ultimo_acceso):
-        """
-        Calcula el período de tiempo transcurrido desde la fecha y hora actual
-        hasta el último acceso, interpretando cadenas como "xx días yy horas".
-    
-        :param ultimo_acceso: String con el tiempo transcurrido (e.g., "108 días 4 horas").
-        :return: String con el tiempo transcurrido en días y horas.
-        """
-        try:
-            # Obtener la fecha y hora actual
-            fecha_actual = datetime.datetime.now()
-    
-            # Inicializar valores de días, horas, minutos y segundos
-            dias = horas = minutos = segundos = 0
-    
-            # Parsear la cadena de ultimo_acceso
-            if "días" in ultimo_acceso:
-                partes = ultimo_acceso.split("días")
-                dias = int(partes[0].strip())
-                if "horas" in partes[1]:
-                    horas = int(partes[1].split("horas")[0].strip())
-            elif "horas" in ultimo_acceso:
-                partes = ultimo_acceso.split("horas")
-                horas = int(partes[0].strip())
-                if "minutos" in partes[1]:
-                    minutos = int(partes[1].split("minutos")[0].strip())
-            elif "segundos" in ultimo_acceso:
-                segundos = int(ultimo_acceso.split("segundos")[0].strip())
-    
-            # Calcular la fecha y hora del último acceso
-            delta = datetime.timedelta(days=dias, hours=horas, minutes=minutos, seconds=segundos)
-            fecha_ultimo_acceso = fecha_actual - delta
-    
-            return fecha_ultimo_acceso.strftime("%d-%m-%y %H:%M:%S")
-
-        except Exception as e:
-            logging.error(f"Error al calcular el período de tiempo: {str(e)}")
-            return "Error al calcular el tiempo"
