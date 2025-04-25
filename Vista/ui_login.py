@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'loginycjSGg.ui'
+## Form generated from reading UI file 'loginqgnUYs.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -50,6 +50,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from Vista import icon
 
 
 class Ui_LoginDialog(object):
@@ -60,6 +61,9 @@ class Ui_LoginDialog(object):
         LoginDialog.resize(213, 168)
         LoginDialog.setMinimumSize(QSize(213, 168))
         LoginDialog.setMaximumSize(QSize(213, 168))
+        icon = QIcon()
+        icon.addFile(":/icon/icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        LoginDialog.setWindowIcon(icon)
         self.verticalLayout_2 = QVBoxLayout(LoginDialog)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.lineUser = QLineEdit(LoginDialog)

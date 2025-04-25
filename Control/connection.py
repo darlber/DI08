@@ -1,4 +1,5 @@
 ﻿import logging
+import os
 import sqlite3
 
 from PySide6.QtWidgets import QMessageBox
@@ -12,36 +13,26 @@ class DB:
         if cls._instance is None:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
-    
-    # TODO login desde base de datos y no hardcodeado
+
     def __init__(self):
         self.conexion = None
-        self.valid_user = "root"
-        self.valid_password = "root"
 
-    def conectarConSQLite(self, user=None, password=None):
+
+    def conectarConSQLite(self):
         """Establece una conexión directa con la base de datos SQLite."""
         # Si ya hay una conexión activa, reutilizarla
         if self.is_connected():
             logging.info("Reutilizando conexión activa a SQLite.")
             return self.conexion
-
-    
-        # Validar credenciales solo si no hay conexión activa
-        if user and password:
-            if not (user == self.valid_user and password == self.valid_password):
-                logging.error("Usuario o contraseña incorrectos.")
-                QMessageBox.critical(None, "Error", "Usuario o contraseña incorrectos.")
-                raise sqlite3.Error("Usuario o contraseña incorrectos.")
-    
         try:
-            self.conexion = sqlite3.connect("C:/Users/darlb/Desktop/DI08/Modelo/acceso.db")
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            db_path = os.path.join(base_dir, "../Modelo/acceso.db")
+            self.conexion = sqlite3.connect(db_path)
             logging.info("Conexión a SQLite establecida.")
         except sqlite3.Error as e:
             raise sqlite3.Error(f"Error al conectar con SQLite: {str(e)}")
-    
-        return self.conexion
 
+        return self.conexion
 
     def is_connected(self):
         """Verifica si hay una conexión activa."""
@@ -52,61 +43,28 @@ class DB:
         if self.conexion:
             self.conexion.close()
             self.conexion = None
-            
+
     def ejecutar_consulta(self, query, params=None):
         """Ejecuta una consulta SQL y devuelve los resultados."""
         if not self.is_connected():
             raise sqlite3.Error("No hay una conexión activa a la base de datos.")
         try:
-            #with es un contexto que asegura que la conexión se cierre correctamente
+            # with es un contexto que asegura que la conexión se cierre correctamente
             # y que los cambios se guarden o se deshagan en caso de error. hace commit
             # y rollback automáticamente
-            with self.conexion: 
+            with self.conexion:
                 cursor = self.conexion.cursor()
                 if params:
                     cursor.execute(query, params)  # Usar parámetros si se proporcionan
                 else:
                     cursor.execute(query)
                 if query.strip().upper().startswith("SELECT"):
-                 return cursor.fetchall()
+                    return cursor.fetchall()
         except sqlite3.Error as e:
             raise sqlite3.Error(f"Error al ejecutar consulta: {str(e)}")
 
-    def intentar_conectar_con_login(self, user, password):
-            #TODO quizas eliminar esta parte
-        try:
-            self.conectarConSQLite(user, password)
-            logging.info("Conexión establecida con credenciales por defecto.")
-            return True
-        except sqlite3.Error as e:
-            logging.warning(f"Conexión con credenciales iniciales fallida: {str(e)}")
-            #TODO quizas eliminar esta parte
-            
-        # Importación local para evitar ciclos
-        from Control.login import LoginDialog  
-        """Muestra el diálogo de login hasta 3 intentos o éxito."""
-        max_retries = 3
-        for attempt in range(max_retries):
-            login_dialog = LoginDialog()
-            if login_dialog.exec():
-                user, password = login_dialog.get_credentials()
-                try:
-                    self.conectarConSQLite(user, password)
-                    QMessageBox.information(None, "Conexión", "Conexión establecida.")
-                    return True
-                except sqlite3.Error as e:
-                    logging.warning(f"Intento {attempt + 1} fallido: {str(e)}")
-            else:
-                logging.info("Login cancelado por el usuario.")
-                break
 
-        QMessageBox.critical(
-            None, "Error de conexión",
-            "No se pudo establecer conexión después de varios intentos."
-        )
-        return False
-    
-    def __enter__(self):    
+    def __enter__(self):
         self.conectarConSQLite()
         return self.conexion
 

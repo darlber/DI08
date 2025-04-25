@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'tablaTqrbCq.ui'
+## Form generated from reading UI file 'tablaJXhOlE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QHBoxLayout, QHeaderView, QLineEdit, QPushButton,
     QSizePolicy, QTableWidget, QTableWidgetItem, QVBoxLayout,
     QWidget)
+from Vista import icon 
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -29,6 +30,9 @@ class Ui_Form(object):
         font = QFont()
         font.setPointSize(12)
         Form.setFont(font)
+        icon = QIcon()
+        icon.addFile(u":/icon/icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        Form.setWindowIcon(icon)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tableWidget = QTableWidget(Form)

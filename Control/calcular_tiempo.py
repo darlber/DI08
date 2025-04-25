@@ -5,6 +5,8 @@ import re
 
 def calcular_periodo_tiempo(ultimo_acceso, fecha_actual=None):
     """
+    python -m doctest -v calcular_tiempo.py
+    
     Método separado del resto para poder testearlo de forma independiente, sin necesidad de
     inicializar la aplicación.
     Args:
@@ -20,8 +22,6 @@ def calcular_periodo_tiempo(ultimo_acceso, fecha_actual=None):
     >>> from datetime import datetime
     >>> mock_now = datetime(2025, 4, 25, 12, 0, 0)
     
-    >>> from datetime import datetime
-    >>> mock_now = datetime(2025, 4, 25, 12, 0, 0)
     
     # Ejemplos de uso:
     

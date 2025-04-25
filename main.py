@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 from PySide6.QtWidgets import QApplication
 from Control.connection import DB
+from Control.login import LoginDialog
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -24,9 +25,11 @@ class Tarea:
         """ Estos type hints son para ayudar a
         entender el tipo de datos que se espera en cada variable. """
         self.user: Optional[str] = "root"
-        self.password: Optional[str] = "root"
+        # password valida es root
+        self.password: Optional[str] = "raat"
 
         self.db = DB()
+        self.login = LoginDialog()
         self.conectar_sqlite()
 
     def conectar_sqlite(self):
@@ -36,7 +39,7 @@ class Tarea:
         # para loguearnos correctamente
         # Simulamos un login erróneo para mostrar la interfaz de login
         # y cumplir con el requerimiento de la tarea
-        if self.db.is_connected() or self.db.intentar_conectar_con_login(
+        if self.db.is_connected() or self.login.validar_credenciales(
             self.user, self.password
         ):
             logging.info("Conexión exitosa. Mostrando la tabla...")
